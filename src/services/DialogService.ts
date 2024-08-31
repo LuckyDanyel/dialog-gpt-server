@@ -1,12 +1,11 @@
 import { Injectable, Inject, HttpStatus } from '@nestjs/common';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { v4 } from 'uuid';
-import { Request } from 'express';
 import OpenAI from 'openai';
 import DialogEntitiy from 'src/entities/DialogEntitiy';
 import BaseException from 'src/exceptions/BaseException';
 import ThreadService from 'src/services/ThreadService';
-import { DialogDTO } from 'src/DTO';
+import { DialogDTO, DialogSettingsDTO } from 'src/DTO';
 
 @Injectable()
 export default class DialogService {
@@ -61,20 +60,14 @@ export default class DialogService {
         }
     };
 
-    public checkDialogLimits(dialog: DialogEntitiy): boolean {
-        const dialogAnswersLimit = 5;
-        const hasDialogAnswersLimitted = dialog.answerCount >= dialogAnswersLimit;
+    public checkAnswersLimited(dialog: DialogEntitiy): boolean {
+        const { answersLimit } = this.getSettings();
+        const hasDialogAnswersLimitted = dialog.answerCount >= answersLimit;
 
-        if(hasDialogAnswersLimitted) throw new BaseException({
-            error: 'Service: DialogService method checkDialogLimits',
-            message: 'Превышено количество ответов бота',
-            status: HttpStatus.UNPROCESSABLE_ENTITY,
-        });
-
-        return true;
+        return hasDialogAnswersLimitted;
     }
 
-    public async increaseAnswerCount(dialogId: DialogEntitiy['id']): Promise<boolean> {
+    public async increaseAnswerCount(dialogId: DialogEntitiy['id']): Promise<DialogEntitiy> {
         try {
             const dialog: string = await this.cacheManager.get(dialogId);
             if(dialog) {
@@ -85,7 +78,7 @@ export default class DialogService {
                 }
                 await this.cacheManager.set(dialogId, JSON.stringify(updatedDialog), this.cacheTime);
 
-                return true;
+                return updatedDialog;
             }
             throw new BaseException({
                 error: 'Service: DialogService method increaseAnswerCount',
@@ -93,11 +86,7 @@ export default class DialogService {
                 status: HttpStatus.BAD_REQUEST
             })
         } catch (error) {
-            throw new BaseException({
-                error: 'Service: DialogService method increaseAnswerCount',
-                message: 'Ошибка увеличения количества полученных ответов',
-                status: HttpStatus.BAD_REQUEST
-            })
+            throw error;
         }
     }
 
@@ -111,6 +100,12 @@ export default class DialogService {
         const parsedDialog: DialogEntitiy = JSON.parse(cacheDialog);
 
         return this.threadService.getMessages(parsedDialog.threadId);   
+    }
+
+    public getSettings(): DialogSettingsDTO {
+        return {
+            answersLimit: 2,
+        }
     }
 
     public async sendMessage(dialog: DialogDTO): Promise<{ dialogId: string, message: OpenAI.Beta.Threads.Messages.Message }> {

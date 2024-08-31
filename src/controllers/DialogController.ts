@@ -1,8 +1,8 @@
-import { Controller, HttpStatus, HttpCode, Req, Res, Post, Body } from '@nestjs/common';
+import { Controller, HttpStatus, HttpCode, Req, Res, Post, Body, Get } from '@nestjs/common';
 import { Request, Response } from 'express';
 import OpenAI from 'openai';
 import DialogService from 'src/services/DialogService';
-import { DialogDTO } from 'src/DTO';
+import { DialogDTO, DialogSettingsDTO } from 'src/DTO';
 
 @Controller('api/dialog')
 export default class DialogController {
@@ -35,6 +35,18 @@ export default class DialogController {
         try {
             const dialogMessages = await this.dialogService.sendMessage(dialog);
             return dialogMessages;   
+        } catch (error) {
+            response.status(error?.status || 500).send(error);
+        }
+    }
+
+    @Get('/settings')
+    public async getSettings(
+        @Res({ passthrough: true }) response: Response
+    ): Promise<DialogSettingsDTO> {
+        try {
+            const settings = this.dialogService.getSettings();
+            return settings;   
         } catch (error) {
             response.status(error?.status || 500).send(error);
         }

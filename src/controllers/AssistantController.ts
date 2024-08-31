@@ -16,7 +16,7 @@ export default class AssistantController {
         @Body() dialog: DialogDTO,
         @Req() request: Request, 
         @Res({ passthrough: true }) response: Response
-    ): Promise<OpenAI.Beta.Threads.Messages.Message> {
+    ): Promise<OpenAI.Beta.Threads.Messages.Message[]> {
         try {
             const answer = await this.assistantService.getAnswer(dialog);
             return answer;

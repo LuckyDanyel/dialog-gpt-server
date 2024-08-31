@@ -3,6 +3,7 @@ import { MessageDTO } from 'src/DTO';
 import OpenAI from 'openai';
 import BaseException from 'src/exceptions/BaseException';
 import OpenAIService from 'src/services/OpenAIService';
+import { MessageCreateParams } from 'openai/resources/beta/threads/messages';
 
 @Injectable()
 export default class ThreadService {
@@ -51,11 +52,11 @@ export default class ThreadService {
         }
     }
 
-    public async sendMessage(threadId: string, messages: MessageDTO[]): Promise<OpenAI.Beta.Threads.Messages.Message> {
+    public async sendMessage(threadId: string, messages: MessageDTO[], role: MessageCreateParams['role'] = 'user' ): Promise<OpenAI.Beta.Threads.Messages.Message> {
         try {
             const openAi = this.openAIService.getClient();
             const result = await openAi.beta.threads.messages.create(threadId, {
-                role: 'user',
+                role,
                 content: messages.map((question) => ({ type: 'text', text: question.text })),
             });
             return result;
