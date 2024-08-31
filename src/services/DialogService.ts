@@ -104,7 +104,7 @@ export default class DialogService {
 
     public getSettings(): DialogSettingsDTO {
         return {
-            answersLimit: 2,
+            answersLimit: 10,
         }
     }
 
