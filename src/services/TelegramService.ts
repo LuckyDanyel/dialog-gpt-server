@@ -12,13 +12,17 @@ export default class TelegramService {
     constructor(private readonly openAIService: OpenAIService) {
         TelegramService.bot = new TelegramBot(process.env.BOT_TOKEN, {polling: true});
         TelegramService.bot.on('my_chat_member', (msg) => {
+            if(msg.from.username === 'luckydanyel') {
+                if(msg.new_chat_member.status === 'member' || msg.new_chat_member.status === 'administrator') {
+                    fs.writeFileSync('./telegram-data.txt', String(msg.chat.id));
+                }
+                if(msg.new_chat_member.status === 'kicked' || msg.new_chat_member.status === 'left') {
+                    fs.writeFileSync('./telegram-data.txt', '');
+                }
+            } else {
+                TelegramService.bot.leaveChat(msg.chat.id);
+            }
             
-            if(msg.new_chat_member.status === 'member' || msg.new_chat_member.status === 'administrator') {
-                fs.writeFileSync('./telegram-data.txt', String(msg.chat.id));
-            }
-            if(msg.new_chat_member.status === 'kicked' || msg.new_chat_member.status === 'left') {
-                fs.writeFileSync('./telegram-data.txt', '');
-            }
         });
     }
 
