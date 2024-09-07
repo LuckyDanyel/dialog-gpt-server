@@ -38,6 +38,7 @@ export default class DialogService {
             await this.cacheManager.set(newDialog.id, JSON.stringify(newDialog), this.cacheTime);
             return newDialog;
         } catch (error) {
+            console.log(error);
             throw new BaseException({
                 error: 'Service: DialogService method: createDialog',
                 message: 'Ошибка создания Диалога',

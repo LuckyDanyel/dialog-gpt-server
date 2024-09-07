@@ -7,10 +7,12 @@ import OpenAIService from './services/OpenAIService';
 import ThreadService from './services/ThreadService';
 import DialogService from './services/DialogService';
 import DialogController from './controllers/DialogController';
+import ToolFnService from './services/ToolFnService';
+import TelegramService from './services/TelegramService';
 
 @Module({
   imports: [ConfigModule.forRoot(), CacheModule.register()],
   controllers: [AssistantController, DialogController],
-  providers: [AssistantService, OpenAIService, ThreadService, DialogService],
+  providers: [AssistantService, OpenAIService, ThreadService, DialogService, ToolFnService, TelegramService],
 })
 export class AppModule {}
