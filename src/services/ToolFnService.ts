@@ -59,7 +59,7 @@ export default class ToolFnService {
         try {
             const client: ClientDTO = JSON.parse(toolCall.function.arguments);
             await this.telegramService.sendMessageAboutRecord(client);
-            return [{ text: 'Вы записаны на прием. Администратор с вами свяжеться для подтверждения записи',  }]
+            return [{ text: 'Вы записаны на прием. Администратор с вами свяжется для подтверждения записи',  }]
         } catch (error) {
             return [{ text: 'Ошибка записи на прием'}]
         }
