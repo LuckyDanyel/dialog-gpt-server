@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MessageDTO, ClientDTO } from 'src/DTO';
 import OpenAI from 'openai';
 import OpenAIService from 'src/services/OpenAIService';
-import { FunctionToolCustom, ToolFnNames } from 'src/types';
+import { ToolFnNames } from 'src/types';
 import TelegramService from './TelegramService';
 
 
@@ -25,34 +25,6 @@ export default class ToolFnService {
         if(RecordReceptionToolCall) return this.callRecordReception(RecordReceptionToolCall);
 
         return Promise.resolve([]);
-    }
-
-    public getFunctions(): FunctionToolCustom[] {
-        return [
-            {
-                type: 'function',
-                function: {
-                    name: 'get_record_reception',
-                    description: 'Пользователь желает записаться на прием',
-                    strict: true,
-                    parameters: {
-                        type: "object",
-                        properties: {
-                            name: {
-                                type: "string",
-                                description: "Имя клиента",
-                            },
-                            phone: {
-                                type: "string",
-                                description: "Номер телефона клиента",
-                            },
-                        },
-                        required: ["name", "phone"],
-                        additionalProperties: false,
-                    }
-                }
-            }
-        ]
     }
 
     private async callRecordReception(toolCall: OpenAI.Beta.Threads.Runs.RequiredActionFunctionToolCall): Promise<MessageDTO[]> {

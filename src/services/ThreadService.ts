@@ -34,8 +34,6 @@ export default class ThreadService {
             const streams = openAi.beta.threads.runs.stream(threadId, {
                 assistant_id: OPEN_AI_ASSISTANT_ID,
                 stream: true,
-                tool_choice: 'auto',
-                tools: this.toolFnService.getFunctions(),
             });
             let message: OpenAI.Beta.Threads.Messages.Message | null = null;
             
@@ -49,15 +47,15 @@ export default class ThreadService {
                 }
             }
 
-            if(message) {
-                return message;
-            }
-
             if(messsageRun) {
                 const messageFromFn = await this.toolFnService.callFunctions(messsageRun.required_action);
                 await openAi.beta.threads.runs.cancel(threadId, messsageRun.id);
                 const messageInChat = await this.sendMessage(threadId, messageFromFn, 'assistant');
                 return messageInChat;
+            }
+
+            if(message) {
+                return message;
             }
             
             throw new Error();
