@@ -15,7 +15,7 @@ export default class ToolFnService {
 
     }
 
-    public callFunctions(required_action: OpenAI.Beta.Threads.Run.RequiredAction): Promise<MessageDTO[]> {
+    public callFunctions(required_action: OpenAI.Beta.Threads.Run.RequiredAction): Promise<boolean> {
 
         const RecordReceptionToolCall = required_action.submit_tool_outputs.tool_calls.find((toolCall) => {
             const fnName: ToolFnNames = toolCall.function.name as ToolFnNames;
@@ -24,16 +24,16 @@ export default class ToolFnService {
 
         if(RecordReceptionToolCall) return this.callRecordReception(RecordReceptionToolCall);
 
-        return Promise.resolve([]);
+        return Promise.resolve(false);
     }
 
-    private async callRecordReception(toolCall: OpenAI.Beta.Threads.Runs.RequiredActionFunctionToolCall): Promise<MessageDTO[]> {
+    private async callRecordReception(toolCall: OpenAI.Beta.Threads.Runs.RequiredActionFunctionToolCall): Promise<boolean> {
         try {
             const client: ClientDTO = JSON.parse(toolCall.function.arguments);
             await this.telegramService.sendMessageAboutRecord(client);
-            return [{ text: 'Вы записаны на прием. Администратор с вами свяжется для подтверждения записи',  }]
+            return true;
         } catch (error) {
-            return [{ text: 'Ошибка записи на прием'}]
+            return false;
         }
 
     }

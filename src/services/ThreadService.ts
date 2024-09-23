@@ -35,23 +35,34 @@ export default class ThreadService {
                 assistant_id: OPEN_AI_ASSISTANT_ID,
                 stream: true,
             });
+    
             let message: OpenAI.Beta.Threads.Messages.Message | null = null;
             
             let messsageRun: OpenAI.Beta.Threads.Run | null = null;
             for await (const stream of streams) {
                 if(stream.event === 'thread.run.requires_action') {
                     messsageRun = stream.data;
+                    const messageFromFn = await this.toolFnService.callFunctions(messsageRun.required_action);
+
+                    const toolStreams = await openAi.beta.threads.runs.submitToolOutputs(threadId, messsageRun.id, {
+                        stream: true,
+                        tool_outputs: [
+                            {
+                                tool_call_id: messsageRun.required_action.submit_tool_outputs.tool_calls[0].id,
+                                output: JSON.stringify({ success: !!messageFromFn }),
+                            }
+                        ]
+                    })
+                    for await (const toolStream of toolStreams) {
+                        if(toolStream.event === 'thread.message.completed') {
+                            message = toolStream.data;
+                        }
+                    }
                 }
                 if(stream.event === 'thread.message.completed') {
                     message = stream.data;
                 }
-            }
 
-            if(messsageRun) {
-                const messageFromFn = await this.toolFnService.callFunctions(messsageRun.required_action);
-                await openAi.beta.threads.runs.cancel(threadId, messsageRun.id);
-                const messageInChat = await this.sendMessage(threadId, messageFromFn, 'assistant');
-                return messageInChat;
             }
 
             if(message) {
