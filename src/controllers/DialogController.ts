@@ -2,7 +2,7 @@ import { Controller, HttpStatus, HttpCode, Req, Res, Post, Body, Get } from '@ne
 import { Request, Response } from 'express';
 import OpenAI from 'openai';
 import DialogService from 'src/services/DialogService';
-import { DialogDTO, DialogSettingsDTO } from 'src/DTO';
+import { DialogDTO, DialogSettings } from 'src/DTO';
 
 @Controller('api/dialog')
 export default class DialogController {
@@ -43,7 +43,7 @@ export default class DialogController {
     @Get('/settings')
     public async getSettings(
         @Res({ passthrough: true }) response: Response
-    ): Promise<DialogSettingsDTO> {
+    ): Promise<DialogSettings> {
         try {
             const settings = this.dialogService.getSettings();
             return settings;   

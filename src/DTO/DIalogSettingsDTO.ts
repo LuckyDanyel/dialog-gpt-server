@@ -1,3 +1,3 @@
-export interface DialogSettingsDTO {
+export interface DialogSettings {
     answersLimit: number;
 }

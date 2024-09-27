@@ -27,6 +27,11 @@ export default class ThreadService {
         }
     }
 
+    public async delete(threadId: string): Promise<any> {
+        const openAi = this.openAIService.getClient();
+        return await openAi.beta.threads.del(threadId);
+    }
+
     public async runThread(threadId: string): Promise<OpenAI.Beta.Threads.Messages.Message> {
         try {
             const { OPEN_AI_ASSISTANT_ID } = process.env;

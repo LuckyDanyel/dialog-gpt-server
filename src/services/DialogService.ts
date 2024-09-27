@@ -5,7 +5,7 @@ import OpenAI from 'openai';
 import DialogEntitiy from 'src/entities/DialogEntitiy';
 import BaseException from 'src/exceptions/BaseException';
 import ThreadService from 'src/services/ThreadService';
-import { DialogDTO, DialogSettingsDTO } from 'src/DTO';
+import { DialogDTO, DialogSettings } from 'src/DTO';
 
 @Injectable()
 export default class DialogService {
@@ -103,9 +103,9 @@ export default class DialogService {
         return this.threadService.getMessages(parsedDialog.threadId);   
     }
 
-    public getSettings(): DialogSettingsDTO {
+    public getSettings(): DialogSettings {
         return {
-            answersLimit: 10,
+            answersLimit: 15,
         }
     }
 

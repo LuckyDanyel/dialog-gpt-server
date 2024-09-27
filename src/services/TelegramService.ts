@@ -32,7 +32,7 @@ export default class TelegramService {
 
     async sendMessageAboutRecord(client: ClientDTO): Promise<void> {
         try {
-            const text = ` ------Заявка-----\n Имя: ${client.name}, Номер телефона: ${client.phone}`
+            const text = ` ------Заявка-----\n Имя: ${client.name}, Номер телефона: ${client.phone} Дата: ${client.date} Имя доктора: ${client.doctorName}`
             await TelegramService.bot.sendMessage(this.getChatId(), text);   
         } catch (error) {
             throw error;

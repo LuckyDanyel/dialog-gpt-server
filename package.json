@@ -29,7 +29,7 @@
     "cookie-parser": "^1.4.6",
     "fast-csv": "^5.0.1",
     "node-telegram-bot-api": "^0.66.0",
-    "openai": "^4.53.2",
+    "openai": "^4.65.0",
     "playwright": "^1.46.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
