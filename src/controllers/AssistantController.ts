@@ -1,13 +1,15 @@
-import { Controller, Post, HttpStatus, HttpCode, Req, Res, Body, } from '@nestjs/common';
+import { Controller, Post, HttpStatus, HttpCode, Req, Res, Body, Get, Query } from '@nestjs/common';
 import { Request, Response } from 'express';
 import AssistantService from 'src/services/AssistantService';
 import OpenAI from 'openai';
+import OpenAIService from 'src/services/OpenAIService';
 import { DialogDTO } from 'src/DTO';
 
 @Controller('api/assistant')
 export default class AssistantController {
     constructor(
         private readonly assistantService: AssistantService,
+        private readonly openAIService: OpenAIService,
     ) {}
 
     @HttpCode(HttpStatus.OK)

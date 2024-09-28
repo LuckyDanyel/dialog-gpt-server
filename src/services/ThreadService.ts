@@ -34,9 +34,14 @@ export default class ThreadService {
 
     public async runThread(threadId: string): Promise<OpenAI.Beta.Threads.Messages.Message> {
         try {
+            const dialogMessages = await this.getMessages(threadId);
+            const milisecnds = dialogMessages[dialogMessages.length - 1]?.created_at * 1000;
+            const date = milisecnds ? new Date(milisecnds) : new Date(Date.now());
+            const instructions = `Системное текущее время у клиента: ${date.toLocaleString()}.`;
             const { OPEN_AI_ASSISTANT_ID } = process.env;
             const openAi = this.openAIService.getClient();
             const streams = openAi.beta.threads.runs.stream(threadId, {
+                additional_instructions: instructions,
                 assistant_id: OPEN_AI_ASSISTANT_ID,
                 stream: true,
             });
@@ -77,6 +82,7 @@ export default class ThreadService {
             throw new Error();
 
         } catch (error) {
+            console.log(error);
             throw new BaseException({
                 error: 'Service: ThreadService method: runThread',
                 message: 'Не удалось получить ответ',
